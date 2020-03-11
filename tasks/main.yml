@@ -1,0 +1,41 @@
+---
+# tasks file for apache-sample
+- name: Install packages
+  become: yes
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Start firewalld service
+  become: yes
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Configure firewall rules
+  become: yes
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+    zone: "{{ firewall_zone }}"
+  loop: "{{ firewall_services }}"
+
+- name: Open ports on firewalld
+  become: yes
+  firewalld:
+    port: "{{ item.port }}/{{ item.proto }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+    zone: "{{ firewall_zone }}"
+  loop: "{{ firewall_ports }}"
+
+- name: Template file out to /var/www/html 
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify : "httpd restart" 

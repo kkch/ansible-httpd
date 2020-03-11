@@ -1,0 +1,18 @@
+---
+# vars file for apache-sample
+
+packages:
+  - httpd
+  - php
+  - mod_ssl
+  - firewalld
+
+firewall_zone: public
+
+firewall_services:
+  - http
+  - https
+
+firewall_ports:
+  - {port: '80', proto: 'tcp'}
+  - {port: '443', proto: 'tcp'}
